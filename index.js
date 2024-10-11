@@ -27,7 +27,7 @@ app.get("/formats/:videoID", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error fetching video info",
-      error: error.message,
+      error: error,
     });
   }
 });
