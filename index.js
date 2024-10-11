@@ -1,22 +1,38 @@
+const express = require("express");
 const ytdl = require("ytdl-core");
 
-const url = "http://www.youtube.com/watch?v=aqz-KE-bpKQ";
-const videoID = "aqz-KE-bpKQ";
+const app = express();
+const port = 3000;
 
-async function fetchAudioFormats() {
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: `Congratulations! Server running on http://localhost:${port}`,
+  });
+});
+
+app.get("/formats/:videoID", async (req, res) => {
+  const { videoID } = req.params;
+
   try {
-    // Retrieve video information
     let info = await ytdl.getInfo(videoID);
 
-    // Filter formats to get audio-only formats
     let audioFormats = ytdl.filterFormats(info.formats, "audioonly");
 
-    console.log("Formats with only audio: " + audioFormats.length);
-    console.log(audioFormats); // Optional: Log audio formats for more details
+    res.json({
+      success: true,
+      formats: audioFormats,
+    });
   } catch (error) {
-    console.error("Error fetching video info:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching video info",
+      error: error.message,
+    });
   }
-}
+});
 
-// Call the function
-fetchAudioFormats();
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
